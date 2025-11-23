@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { domainNames } from '../data/assessmentQuestions';
 import './PatientProfile.css';
 
 const PatientProfile = () => {
@@ -10,6 +11,7 @@ const PatientProfile = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [patient, setPatient] = useState(null);
+  const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
@@ -17,6 +19,7 @@ const PatientProfile = () => {
 
   useEffect(() => {
     loadPatient();
+    loadAssessments();
   }, [patientId]);
 
   const loadPatient = async () => {
@@ -45,6 +48,25 @@ const PatientProfile = () => {
       setError('Failed to load patient');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAssessments = async () => {
+    try {
+      const q = query(
+        collection(db, 'assessments'),
+        where('patientId', '==', patientId),
+        where('userId', '==', currentUser.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      const assessmentsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setAssessments(assessmentsData);
+    } catch (err) {
+      console.error('Error loading assessments:', err);
     }
   };
 
@@ -215,9 +237,57 @@ const PatientProfile = () => {
         </div>
 
         <div className="profile-sections">
-          <div className="section-card">
-            <h2>Assessments</h2>
-            <p className="section-placeholder">No assessments yet. Assessments will be added in Sprint 3.</p>
+          <div className="section-card section-card-full">
+            <div className="section-header">
+              <h2>Assessments</h2>
+              <button
+                className="btn-primary"
+                onClick={() => navigate(`/patients/${patientId}/assessment/new`)}
+              >
+                + New Assessment
+              </button>
+            </div>
+            {assessments.length === 0 ? (
+              <p className="section-placeholder">No assessments yet. Click "New Assessment" to get started.</p>
+            ) : (
+              <div className="assessments-list">
+                {assessments.map(assessment => (
+                  <div key={assessment.id} className="assessment-item">
+                    <div className="assessment-info">
+                      <div className="assessment-type">
+                        <span className={`type-badge ${assessment.type}`}>
+                          {assessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'}
+                        </span>
+                        <span className={`status-badge ${assessment.status}`}>
+                          {assessment.status === 'complete' ? 'Complete' : 'Draft'}
+                        </span>
+                      </div>
+                      <div className="assessment-date">
+                        {new Date(assessment.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    {assessment.status === 'complete' && assessment.domainAverages && (
+                      <div className="domain-averages">
+                        {Object.entries(assessment.domainAverages).map(([domain, avg]) => (
+                          avg && (
+                            <div key={domain} className="domain-avg">
+                              <span className="domain-name">{domainNames[domain]}:</span>
+                              <span className="domain-value">{avg}</span>
+                            </div>
+                          )
+                        ))}
+                      </div>
+                    )}
+                    <button
+                      className="btn-view-assessment"
+                      onClick={() => navigate(`/patients/${patientId}/assessment/${assessment.id}`)}
+                    >
+                      {assessment.status === 'complete' ? 'View' : 'Continue'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="section-card">
