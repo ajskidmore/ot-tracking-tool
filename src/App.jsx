@@ -3,6 +3,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import Patients from './components/Patients';
+import PatientProfile from './components/PatientProfile';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
@@ -18,6 +20,22 @@ function App() {
             element={
               <PrivateRoute>
                 <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/patients"
+            element={
+              <PrivateRoute>
+                <Patients />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/patients/:patientId"
+            element={
+              <PrivateRoute>
+                <PatientProfile />
               </PrivateRoute>
             }
           />
