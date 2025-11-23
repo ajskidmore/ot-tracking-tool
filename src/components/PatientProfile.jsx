@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { domainNames } from '../data/assessmentQuestions';
 import ProgressCharts from './ProgressCharts';
+import ROMProgressCharts from './ROMProgressCharts';
 import './PatientProfile.css';
 
 const PatientProfile = () => {
@@ -277,7 +278,13 @@ const PatientProfile = () => {
               className={`tab-button ${activeTab === 'progress' ? 'active' : ''}`}
               onClick={() => setActiveTab('progress')}
             >
-              Progress
+              Program Progress
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'rom-progress' ? 'active' : ''}`}
+              onClick={() => setActiveTab('rom-progress')}
+            >
+              ROM Progress
             </button>
           </div>
 
@@ -433,6 +440,10 @@ const PatientProfile = () => {
 
             {activeTab === 'progress' && (
               <ProgressCharts assessments={assessments} />
+            )}
+
+            {activeTab === 'rom-progress' && (
+              <ROMProgressCharts romAssessments={romAssessments} />
             )}
           </div>
         </div>
