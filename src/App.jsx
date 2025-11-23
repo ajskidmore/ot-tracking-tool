@@ -7,6 +7,7 @@ import Patients from './components/Patients';
 import PatientProfile from './components/PatientProfile';
 import AssessmentForm from './components/AssessmentForm';
 import ROMAssessmentForm from './components/ROMAssessmentForm';
+import Goals from './components/Goals';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
@@ -70,6 +71,14 @@ function App() {
             element={
               <PrivateRoute>
                 <ROMAssessmentForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/patients/:patientId/goals"
+            element={
+              <PrivateRoute>
+                <Goals />
               </PrivateRoute>
             }
           />

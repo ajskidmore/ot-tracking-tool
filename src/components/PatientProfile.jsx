@@ -15,6 +15,7 @@ const PatientProfile = () => {
   const [patient, setPatient] = useState(null);
   const [assessments, setAssessments] = useState([]);
   const [romAssessments, setRomAssessments] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
@@ -25,6 +26,7 @@ const PatientProfile = () => {
     loadPatient();
     loadAssessments();
     loadROMAssessments();
+    loadGoals();
   }, [patientId]);
 
   const loadPatient = async () => {
@@ -91,6 +93,25 @@ const PatientProfile = () => {
       setRomAssessments(romData);
     } catch (err) {
       console.error('Error loading ROM assessments:', err);
+    }
+  };
+
+  const loadGoals = async () => {
+    try {
+      const q = query(
+        collection(db, 'goals'),
+        where('patientId', '==', patientId),
+        where('userId', '==', currentUser.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      const goalsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setGoals(goalsData);
+    } catch (err) {
+      console.error('Error loading goals:', err);
     }
   };
 
@@ -286,6 +307,12 @@ const PatientProfile = () => {
             >
               ROM Progress
             </button>
+            <button
+              className={`tab-button ${activeTab === 'goals' ? 'active' : ''}`}
+              onClick={() => navigate(`/patients/${patientId}/goals`)}
+            >
+              Goals ({goals.filter(g => g.status === 'active').length})
+            </button>
           </div>
 
           <div className="tab-content">
@@ -306,8 +333,8 @@ const PatientProfile = () => {
                       <div className="quick-stat-number">{assessments.filter(a => a.status === 'complete').length + romAssessments.filter(r => r.status === 'complete').length}</div>
                       <div className="quick-stat-label">Completed</div>
                     </div>
-                    <div className="quick-stat">
-                      <div className="quick-stat-number">0</div>
+                    <div className="quick-stat" style={{ cursor: 'pointer' }} onClick={() => navigate(`/patients/${patientId}/goals`)}>
+                      <div className="quick-stat-number">{goals.filter(g => g.status === 'active').length}</div>
                       <div className="quick-stat-label">Active Goals</div>
                     </div>
                   </div>
