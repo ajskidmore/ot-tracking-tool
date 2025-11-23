@@ -8,6 +8,7 @@ import PatientProfile from './components/PatientProfile';
 import AssessmentForm from './components/AssessmentForm';
 import ROMAssessmentForm from './components/ROMAssessmentForm';
 import Goals from './components/Goals';
+import SessionNotes from './components/SessionNotes';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
@@ -79,6 +80,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Goals />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/patients/:patientId/session-notes"
+            element={
+              <PrivateRoute>
+                <SessionNotes />
               </PrivateRoute>
             }
           />

@@ -313,6 +313,12 @@ const PatientProfile = () => {
             >
               Goals ({goals.filter(g => g.status === 'active').length})
             </button>
+            <button
+              className={`tab-button ${activeTab === 'session-notes' ? 'active' : ''}`}
+              onClick={() => navigate(`/patients/${patientId}/session-notes`)}
+            >
+              Session Notes
+            </button>
           </div>
 
           <div className="tab-content">

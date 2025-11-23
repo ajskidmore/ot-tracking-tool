@@ -46,6 +46,13 @@ service cloud.firestore {
       allow create: if isAuthenticated();
     }
 
+    // Session Notes collection - users can only access session notes for their patients
+    match /sessionNotes/{sessionId} {
+      allow read, write: if isAuthenticated() &&
+                           resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
     // Default deny all other access
     match /{document=**} {
       allow read, write: if false;
