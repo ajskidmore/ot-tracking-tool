@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import Patients from './components/Patients';
 import PatientProfile from './components/PatientProfile';
 import AssessmentForm from './components/AssessmentForm';
+import ROMAssessmentForm from './components/ROMAssessmentForm';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
@@ -53,6 +54,22 @@ function App() {
             element={
               <PrivateRoute>
                 <AssessmentForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/patients/:patientId/rom-assessment/new"
+            element={
+              <PrivateRoute>
+                <ROMAssessmentForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/patients/:patientId/rom-assessment/:assessmentId"
+            element={
+              <PrivateRoute>
+                <ROMAssessmentForm />
               </PrivateRoute>
             }
           />

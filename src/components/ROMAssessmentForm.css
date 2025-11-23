@@ -1,0 +1,338 @@
+.rom-assessment-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.assessment-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.assessment-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 28px;
+}
+
+.assessment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.form-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+  margin: 0 0 20px 0;
+  color: #667eea;
+  font-size: 22px;
+}
+
+/* Type Selection */
+.type-selection {
+  display: flex;
+  gap: 16px;
+}
+
+.type-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.type-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.type-option span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.type-option.selected {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.type-option:hover {
+  border-color: #667eea;
+}
+
+/* Region Selection */
+.region-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.region-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.region-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.region-checkbox span {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.region-checkbox.selected {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.region-checkbox:hover {
+  border-color: #667eea;
+}
+
+/* Measurements Container */
+.measurements-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.region-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.region-tab {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.region-tab:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.region-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  font-weight: 600;
+}
+
+/* Measurements Content */
+.measurements-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.measurement-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.measurement-header h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.measurement-description {
+  margin: 0 0 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.normal-range {
+  margin: 0;
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Bilateral Inputs */
+.bilateral-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.side-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.side-input label {
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+/* Single Input */
+.single-input {
+  max-width: 250px;
+}
+
+/* Input with Unit */
+.input-with-unit {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-unit input {
+  flex: 1;
+  padding: 12px 40px 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+
+.input-with-unit input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.input-with-unit .unit {
+  position: absolute;
+  right: 16px;
+  color: #999;
+  font-weight: 600;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+/* Measurement Feedback */
+.measurement-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.normal {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status-badge.mild {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.moderate {
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.status-badge.severe {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+/* Notes */
+.form-section textarea {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.form-section textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .assessment-header h1 {
+    font-size: 22px;
+  }
+
+  .type-selection {
+    flex-direction: column;
+  }
+
+  .region-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .bilateral-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .region-tabs {
+    flex-wrap: wrap;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

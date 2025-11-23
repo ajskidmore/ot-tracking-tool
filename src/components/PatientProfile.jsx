@@ -13,6 +13,7 @@ const PatientProfile = () => {
   const { currentUser } = useAuth();
   const [patient, setPatient] = useState(null);
   const [assessments, setAssessments] = useState([]);
+  const [romAssessments, setRomAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
@@ -22,6 +23,7 @@ const PatientProfile = () => {
   useEffect(() => {
     loadPatient();
     loadAssessments();
+    loadROMAssessments();
   }, [patientId]);
 
   const loadPatient = async () => {
@@ -69,6 +71,25 @@ const PatientProfile = () => {
       setAssessments(assessmentsData);
     } catch (err) {
       console.error('Error loading assessments:', err);
+    }
+  };
+
+  const loadROMAssessments = async () => {
+    try {
+      const q = query(
+        collection(db, 'romAssessments'),
+        where('patientId', '==', patientId),
+        where('userId', '==', currentUser.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      const romData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setRomAssessments(romData);
+    } catch (err) {
+      console.error('Error loading ROM assessments:', err);
     }
   };
 
@@ -268,10 +289,14 @@ const PatientProfile = () => {
                   <div className="quick-stats">
                     <div className="quick-stat">
                       <div className="quick-stat-number">{assessments.length}</div>
-                      <div className="quick-stat-label">Total Assessments</div>
+                      <div className="quick-stat-label">Program Evals</div>
                     </div>
                     <div className="quick-stat">
-                      <div className="quick-stat-number">{assessments.filter(a => a.status === 'complete').length}</div>
+                      <div className="quick-stat-number">{romAssessments.length}</div>
+                      <div className="quick-stat-label">ROM Assessments</div>
+                    </div>
+                    <div className="quick-stat">
+                      <div className="quick-stat-number">{assessments.filter(a => a.status === 'complete').length + romAssessments.filter(r => r.status === 'complete').length}</div>
                       <div className="quick-stat-label">Completed</div>
                     </div>
                     <div className="quick-stat">
@@ -283,17 +308,21 @@ const PatientProfile = () => {
 
                 <div className="section-card">
                   <h2>Recent Activity</h2>
-                  {assessments.length === 0 ? (
+                  {assessments.length === 0 && romAssessments.length === 0 ? (
                     <p className="section-placeholder">No activity yet.</p>
                   ) : (
                     <div className="recent-activity">
-                      {assessments.slice(0, 3).map(assessment => (
+                      {[...assessments.map(a => ({ ...a, assessmentType: 'program' })),
+                        ...romAssessments.map(r => ({ ...r, assessmentType: 'rom' }))]
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                        .slice(0, 5)
+                        .map(assessment => (
                         <div key={assessment.id} className="activity-item">
                           <span className={`type-badge ${assessment.type}`}>
-                            {assessment.type === 'pre' ? 'Pre' : 'Post'}
+                            {assessment.assessmentType === 'rom' ? 'ROM' : assessment.type === 'pre' ? 'Pre' : 'Post'}
                           </span>
                           <span className="activity-text">
-                            Assessment {assessment.status === 'complete' ? 'completed' : 'saved as draft'}
+                            {assessment.assessmentType === 'rom' ? 'ROM Assessment' : 'Program Evaluation'} {assessment.status === 'complete' ? 'completed' : 'saved as draft'}
                           </span>
                           <span className="activity-date">
                             {new Date(assessment.createdAt).toLocaleDateString()}
@@ -310,21 +339,31 @@ const PatientProfile = () => {
               <div className="section-card section-card-full">
                 <div className="section-header">
                   <h2>Assessments</h2>
-                  <button
-                    className="btn-primary"
-                    onClick={() => navigate(`/patients/${patientId}/assessment/new`)}
-                  >
-                    + New Assessment
-                  </button>
+                  <div className="assessment-buttons">
+                    <button
+                      className="btn-primary"
+                      onClick={() => navigate(`/patients/${patientId}/assessment/new`)}
+                    >
+                      + Program Evaluation
+                    </button>
+                    <button
+                      className="btn-primary"
+                      onClick={() => navigate(`/patients/${patientId}/rom-assessment/new`)}
+                    >
+                      + ROM Assessment
+                    </button>
+                  </div>
                 </div>
-                {assessments.length === 0 ? (
-                  <p className="section-placeholder">No assessments yet. Click "New Assessment" to get started.</p>
+                {assessments.length === 0 && romAssessments.length === 0 ? (
+                  <p className="section-placeholder">No assessments yet. Click a button above to get started.</p>
                 ) : (
                   <div className="assessments-list">
+                    {/* Program Evaluations */}
                     {assessments.map(assessment => (
-                      <div key={assessment.id} className="assessment-item">
+                      <div key={`prog-${assessment.id}`} className="assessment-item">
                         <div className="assessment-info">
                           <div className="assessment-type">
+                            <span className="assessment-category">Program Evaluation</span>
                             <span className={`type-badge ${assessment.type}`}>
                               {assessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'}
                             </span>
@@ -353,6 +392,37 @@ const PatientProfile = () => {
                           onClick={() => navigate(`/patients/${patientId}/assessment/${assessment.id}`)}
                         >
                           {assessment.status === 'complete' ? 'View' : 'Continue'}
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* ROM Assessments */}
+                    {romAssessments.map(romAssessment => (
+                      <div key={`rom-${romAssessment.id}`} className="assessment-item">
+                        <div className="assessment-info">
+                          <div className="assessment-type">
+                            <span className="assessment-category">ROM Assessment</span>
+                            <span className={`type-badge ${romAssessment.type}`}>
+                              {romAssessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'}
+                            </span>
+                            <span className={`status-badge ${romAssessment.status}`}>
+                              {romAssessment.status === 'complete' ? 'Complete' : 'Draft'}
+                            </span>
+                          </div>
+                          <div className="assessment-date">
+                            {new Date(romAssessment.createdAt).toLocaleDateString()}
+                          </div>
+                          {romAssessment.selectedRegions && romAssessment.selectedRegions.length > 0 && (
+                            <div className="rom-regions">
+                              Regions: {romAssessment.selectedRegions.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          className="btn-view-assessment"
+                          onClick={() => navigate(`/patients/${patientId}/rom-assessment/${romAssessment.id}`)}
+                        >
+                          {romAssessment.status === 'complete' ? 'View' : 'Continue'}
                         </button>
                       </div>
                     ))}
