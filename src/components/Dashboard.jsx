@@ -115,11 +115,11 @@ const Dashboard = () => {
           <ul>
             <li>✅ Sprint 1: Authentication and basic setup (Completed)</li>
             <li>✅ Sprint 2: Patient management system (Completed)</li>
-            <li>⏳ Sprint 3: Program evaluation assessments (Next)</li>
-            <li>⏳ Sprint 4: Progress visualization with charts</li>
+            <li>✅ Sprint 3: Program evaluation assessments (Completed)</li>
+            <li>⏳ Sprint 4: Progress visualization with charts (Next)</li>
           </ul>
           <p className="info-note">
-            You can now add and manage patients! Click the "Patients" link above to get started.
+            You can now add patients and create assessments! Go to any patient profile and click "New Assessment" to get started.
           </p>
         </div>
       </main>

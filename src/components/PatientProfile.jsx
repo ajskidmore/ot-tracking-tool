@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } fr
 import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { domainNames } from '../data/assessmentQuestions';
+import ProgressCharts from './ProgressCharts';
 import './PatientProfile.css';
 
 const PatientProfile = () => {
@@ -16,6 +17,7 @@ const PatientProfile = () => {
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'assessments', 'progress'
 
   useEffect(() => {
     loadPatient();
@@ -236,68 +238,132 @@ const PatientProfile = () => {
           )}
         </div>
 
-        <div className="profile-sections">
-          <div className="section-card section-card-full">
-            <div className="section-header">
-              <h2>Assessments</h2>
-              <button
-                className="btn-primary"
-                onClick={() => navigate(`/patients/${patientId}/assessment/new`)}
-              >
-                + New Assessment
-              </button>
-            </div>
-            {assessments.length === 0 ? (
-              <p className="section-placeholder">No assessments yet. Click "New Assessment" to get started.</p>
-            ) : (
-              <div className="assessments-list">
-                {assessments.map(assessment => (
-                  <div key={assessment.id} className="assessment-item">
-                    <div className="assessment-info">
-                      <div className="assessment-type">
-                        <span className={`type-badge ${assessment.type}`}>
-                          {assessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'}
-                        </span>
-                        <span className={`status-badge ${assessment.status}`}>
-                          {assessment.status === 'complete' ? 'Complete' : 'Draft'}
-                        </span>
-                      </div>
-                      <div className="assessment-date">
-                        {new Date(assessment.createdAt).toLocaleDateString()}
-                      </div>
+        <div className="profile-tabs">
+          <div className="tab-buttons">
+            <button
+              className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              Overview
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'assessments' ? 'active' : ''}`}
+              onClick={() => setActiveTab('assessments')}
+            >
+              Assessments ({assessments.length})
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'progress' ? 'active' : ''}`}
+              onClick={() => setActiveTab('progress')}
+            >
+              Progress
+            </button>
+          </div>
+
+          <div className="tab-content">
+            {activeTab === 'overview' && (
+              <div className="profile-sections">
+                <div className="section-card">
+                  <h2>Quick Stats</h2>
+                  <div className="quick-stats">
+                    <div className="quick-stat">
+                      <div className="quick-stat-number">{assessments.length}</div>
+                      <div className="quick-stat-label">Total Assessments</div>
                     </div>
-                    {assessment.status === 'complete' && assessment.domainAverages && (
-                      <div className="domain-averages">
-                        {Object.entries(assessment.domainAverages).map(([domain, avg]) => (
-                          avg && (
-                            <div key={domain} className="domain-avg">
-                              <span className="domain-name">{domainNames[domain]}:</span>
-                              <span className="domain-value">{avg}</span>
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    )}
-                    <button
-                      className="btn-view-assessment"
-                      onClick={() => navigate(`/patients/${patientId}/assessment/${assessment.id}`)}
-                    >
-                      {assessment.status === 'complete' ? 'View' : 'Continue'}
-                    </button>
+                    <div className="quick-stat">
+                      <div className="quick-stat-number">{assessments.filter(a => a.status === 'complete').length}</div>
+                      <div className="quick-stat-label">Completed</div>
+                    </div>
+                    <div className="quick-stat">
+                      <div className="quick-stat-number">0</div>
+                      <div className="quick-stat-label">Active Goals</div>
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="section-card">
+                  <h2>Recent Activity</h2>
+                  {assessments.length === 0 ? (
+                    <p className="section-placeholder">No activity yet.</p>
+                  ) : (
+                    <div className="recent-activity">
+                      {assessments.slice(0, 3).map(assessment => (
+                        <div key={assessment.id} className="activity-item">
+                          <span className={`type-badge ${assessment.type}`}>
+                            {assessment.type === 'pre' ? 'Pre' : 'Post'}
+                          </span>
+                          <span className="activity-text">
+                            Assessment {assessment.status === 'complete' ? 'completed' : 'saved as draft'}
+                          </span>
+                          <span className="activity-date">
+                            {new Date(assessment.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
-          </div>
 
-          <div className="section-card">
-            <h2>Goals</h2>
-            <p className="section-placeholder">No goals yet. Goals will be added in Sprint 7.</p>
-          </div>
+            {activeTab === 'assessments' && (
+              <div className="section-card section-card-full">
+                <div className="section-header">
+                  <h2>Assessments</h2>
+                  <button
+                    className="btn-primary"
+                    onClick={() => navigate(`/patients/${patientId}/assessment/new`)}
+                  >
+                    + New Assessment
+                  </button>
+                </div>
+                {assessments.length === 0 ? (
+                  <p className="section-placeholder">No assessments yet. Click "New Assessment" to get started.</p>
+                ) : (
+                  <div className="assessments-list">
+                    {assessments.map(assessment => (
+                      <div key={assessment.id} className="assessment-item">
+                        <div className="assessment-info">
+                          <div className="assessment-type">
+                            <span className={`type-badge ${assessment.type}`}>
+                              {assessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'}
+                            </span>
+                            <span className={`status-badge ${assessment.status}`}>
+                              {assessment.status === 'complete' ? 'Complete' : 'Draft'}
+                            </span>
+                          </div>
+                          <div className="assessment-date">
+                            {new Date(assessment.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                        {assessment.status === 'complete' && assessment.domainAverages && (
+                          <div className="domain-averages">
+                            {Object.entries(assessment.domainAverages).map(([domain, avg]) => (
+                              avg && (
+                                <div key={domain} className="domain-avg">
+                                  <span className="domain-name">{domainNames[domain]}:</span>
+                                  <span className="domain-value">{avg}</span>
+                                </div>
+                              )
+                            ))}
+                          </div>
+                        )}
+                        <button
+                          className="btn-view-assessment"
+                          onClick={() => navigate(`/patients/${patientId}/assessment/${assessment.id}`)}
+                        >
+                          {assessment.status === 'complete' ? 'View' : 'Continue'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-          <div className="section-card">
-            <h2>Session Notes</h2>
-            <p className="section-placeholder">No session notes yet. Session notes will be added in Sprint 8.</p>
+            {activeTab === 'progress' && (
+              <ProgressCharts assessments={assessments} />
+            )}
           </div>
         </div>
       </div>
