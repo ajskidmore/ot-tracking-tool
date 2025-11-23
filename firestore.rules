@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection - users can only read/write their own profile
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+
+    // Patients collection - users can only access their own patients
+    match /patients/{patientId} {
+      allow read, write: if isAuthenticated() &&
+                           resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // Assessments collection - users can only access assessments for their patients
+    match /assessments/{assessmentId} {
+      allow read, write: if isAuthenticated() &&
+                           resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // Goals collection - users can only access goals for their patients
+    match /goals/{goalId} {
+      allow read, write: if isAuthenticated() &&
+                           resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
