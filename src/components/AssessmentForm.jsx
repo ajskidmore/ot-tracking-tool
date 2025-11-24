@@ -24,6 +24,7 @@ const AssessmentForm = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [existingAssessment, setExistingAssessment] = useState(null);
+  const [viewMode, setViewMode] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -42,7 +43,7 @@ const AssessmentForm = () => {
       setPatient({ id: patientDoc.id, ...patientDoc.data() });
 
       // Load existing assessment if editing
-      if (assessmentId) {
+      if (assessmentId && assessmentId !== 'new') {
         const assessmentDoc = await getDoc(doc(db, 'assessments', assessmentId));
         if (assessmentDoc.exists()) {
           const data = assessmentDoc.data();
@@ -50,6 +51,8 @@ const AssessmentForm = () => {
           setAssessmentType(data.type);
           setResponses(data.responses || {});
           setNotes(data.notes || '');
+          // Set view mode if assessment is complete
+          setViewMode(data.status === 'complete');
         }
       }
     } catch (err) {
@@ -134,6 +137,85 @@ const AssessmentForm = () => {
 
   if (!patient) {
     return <div className="error-message">Patient not found</div>;
+  }
+
+  // If viewing a completed assessment, show results
+  if (viewMode && existingAssessment) {
+    return (
+      <div className="assessment-form-page">
+        <div className="assessment-form-container">
+          <div className="assessment-header">
+            <div>
+              <h1>Program Evaluation Assessment - Results</h1>
+              <p>Patient: {patient.firstName} {patient.lastName}</p>
+              <p className="assessment-meta">
+                {existingAssessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'} |
+                Completed: {new Date(existingAssessment.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button className="btn-secondary" onClick={() => setViewMode(false)}>
+                Edit Assessment
+              </button>
+              <button className="btn-back" onClick={() => navigate(`/patients/${patientId}`)}>
+                ← Back to Patient
+              </button>
+            </div>
+          </div>
+
+          {/* Domain Averages Summary */}
+          <div className="results-summary">
+            <h2>Domain Averages</h2>
+            <div className="domain-averages-grid">
+              {Object.values(assessmentDomains).map(domain => {
+                const average = existingAssessment.domainAverages?.[domain];
+                return average ? (
+                  <div key={domain} className="domain-average-card">
+                    <h3>{domainNames[domain]}</h3>
+                    <div className="average-score">{average}</div>
+                    <div className="score-label">Average Score</div>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          </div>
+
+          {/* Detailed Responses */}
+          <div className="results-details">
+            <h2>Detailed Responses</h2>
+            {Object.values(assessmentDomains).map(domain => (
+              <div key={domain} className="domain-section">
+                <h3 className="domain-title">{domainNames[domain]}</h3>
+                {getQuestionsByDomain(domain).map(question => {
+                  const response = responses[question.id];
+                  const rating = ratingScale.find(r => r.value === response);
+                  return (
+                    <div key={question.id} className="question-result-row">
+                      <div className="question-text">
+                        <span className="question-number">{question.number}.</span>
+                        {question.question}
+                      </div>
+                      <div className="response-value">
+                        <span className="score-badge">{response}</span>
+                        <span className="score-description">{rating?.label || 'N/A'}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* Notes */}
+          {notes && (
+            <div className="results-notes">
+              <h2>Additional Notes</h2>
+              <p>{notes}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
