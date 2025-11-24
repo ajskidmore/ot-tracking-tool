@@ -27,6 +27,8 @@ const ROMAssessmentForm = () => {
   const [measurements, setMeasurements] = useState({});
   const [notes, setNotes] = useState('');
   const [activeRegion, setActiveRegion] = useState(null);
+  const [viewMode, setViewMode] = useState(false);
+  const [existingAssessment, setExistingAssessment] = useState(null);
 
   useEffect(() => {
     loadPatient();
@@ -70,6 +72,7 @@ const ROMAssessmentForm = () => {
           navigate('/patients');
           return;
         }
+        setExistingAssessment({ id: docSnap.id, ...data });
         setAssessmentType(data.type);
         setSelectedRegions(data.selectedRegions || []);
         setMeasurements(data.measurements || {});
@@ -77,6 +80,8 @@ const ROMAssessmentForm = () => {
         if (data.selectedRegions && data.selectedRegions.length > 0) {
           setActiveRegion(data.selectedRegions[0]);
         }
+        // Set view mode if assessment is complete
+        setViewMode(data.status === 'complete');
       }
     } catch (err) {
       console.error('Error loading assessment:', err);
@@ -185,6 +190,117 @@ const ROMAssessmentForm = () => {
   }
 
   const regionMeasurements = activeRegion ? getMeasurementsByRegion(activeRegion) : [];
+
+  // View mode for completed assessments
+  if (viewMode && existingAssessment) {
+    return (
+      <div className="rom-assessment-container">
+        <div className="assessment-header">
+          <div>
+            <h1>ROM Assessment - Results</h1>
+            <p>{patient.firstName} {patient.lastName}</p>
+            <p className="assessment-meta">
+              {existingAssessment.type === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'} |
+              Completed: {new Date(existingAssessment.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button className="btn-secondary" onClick={() => setViewMode(false)}>
+              Edit Assessment
+            </button>
+            <button className="btn-back" onClick={() => navigate(`/patients/${patientId}`)}>
+              ← Back to Patient
+            </button>
+          </div>
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
+
+        {/* Results by Region */}
+        <div className="rom-results">
+          {selectedRegions.map(region => {
+            const regionMeasurementsList = getMeasurementsByRegion(region);
+            return (
+              <div key={region} className="region-results-card">
+                <h2>{regionNames[region]}</h2>
+                <div className="measurements-results">
+                  {regionMeasurementsList.map(measurement => {
+                    const getMeasurementKey = (id, side) => side ? `${id}_${side}` : id;
+
+                    if (measurement.bilateral) {
+                      const leftKey = getMeasurementKey(measurement.id, 'left');
+                      const rightKey = getMeasurementKey(measurement.id, 'right');
+                      const leftValue = measurements[leftKey];
+                      const rightValue = measurements[rightKey];
+
+                      if (!leftValue && !rightValue) return null;
+
+                      return (
+                        <div key={measurement.id} className="measurement-result">
+                          <div className="measurement-name">{measurement.movement}</div>
+                          <div className="measurement-values">
+                            {leftValue && (
+                              <div className="side-result">
+                                <span className="side-label">Left:</span>
+                                <span className="measurement-value">{leftValue}°</span>
+                                <span className={`rom-percentage ${getROMStatus(calculateROMPercentage(leftValue, measurement.normalRange.max))}`}>
+                                  {calculateROMPercentage(leftValue, measurement.normalRange.max)}%
+                                </span>
+                              </div>
+                            )}
+                            {rightValue && (
+                              <div className="side-result">
+                                <span className="side-label">Right:</span>
+                                <span className="measurement-value">{rightValue}°</span>
+                                <span className={`rom-percentage ${getROMStatus(calculateROMPercentage(rightValue, measurement.normalRange.max))}`}>
+                                  {calculateROMPercentage(rightValue, measurement.normalRange.max)}%
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="normal-range-info">
+                            Normal: {measurement.normalRange.min}° - {measurement.normalRange.max}°
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      const value = measurements[measurement.id];
+                      if (!value) return null;
+
+                      return (
+                        <div key={measurement.id} className="measurement-result">
+                          <div className="measurement-name">{measurement.movement}</div>
+                          <div className="measurement-values">
+                            <div className="side-result">
+                              <span className="measurement-value">{value}°</span>
+                              <span className={`rom-percentage ${getROMStatus(calculateROMPercentage(value, measurement.normalRange.max))}`}>
+                                {calculateROMPercentage(value, measurement.normalRange.max)}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="normal-range-info">
+                            Normal: {measurement.normalRange.min}° - {measurement.normalRange.max}°
+                          </div>
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Notes */}
+        {notes && (
+          <div className="rom-notes-view">
+            <h2>Notes</h2>
+            <p>{notes}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="rom-assessment-container">

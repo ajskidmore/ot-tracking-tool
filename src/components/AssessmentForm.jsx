@@ -47,12 +47,19 @@ const AssessmentForm = () => {
         const assessmentDoc = await getDoc(doc(db, 'assessments', assessmentId));
         if (assessmentDoc.exists()) {
           const data = assessmentDoc.data();
+          console.log('Loaded assessment:', data);
+          console.log('Status:', data.status);
+          console.log('Responses:', data.responses);
+          console.log('Domain averages:', data.domainAverages);
+
           setExistingAssessment({ id: assessmentDoc.id, ...data });
           setAssessmentType(data.type);
           setResponses(data.responses || {});
           setNotes(data.notes || '');
           // Set view mode if assessment is complete
           setViewMode(data.status === 'complete');
+
+          console.log('View mode set to:', data.status === 'complete');
         }
       }
     } catch (err) {

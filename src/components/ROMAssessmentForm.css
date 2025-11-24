@@ -336,3 +336,136 @@
     width: 100%;
   }
 }
+
+/* ROM Results View Styles */
+.assessment-meta {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #999;
+}
+
+.rom-results {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.region-results-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.region-results-card h2 {
+  margin: 0 0 20px 0;
+  color: #667eea;
+  font-size: 22px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 12px;
+}
+
+.measurements-results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.measurement-result {
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.measurement-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.measurement-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.side-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.side-label {
+  font-weight: 500;
+  color: #666;
+  min-width: 50px;
+}
+
+.measurement-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  min-width: 60px;
+}
+
+.rom-percentage {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rom-percentage.normal {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.rom-percentage.mild {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.rom-percentage.moderate {
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.rom-percentage.severe {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.normal-range-info {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+}
+
+.rom-notes-view {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rom-notes-view h2 {
+  margin: 0 0 16px 0;
+  color: #667eea;
+  font-size: 22px;
+}
+
+.rom-notes-view p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+  .measurement-values {
+    flex-direction: column;
+  }
+}
