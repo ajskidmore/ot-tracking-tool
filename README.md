@@ -1,37 +1,86 @@
 # OT Tracking Tool
 
-A comprehensive web application for occupational therapists to track patient assessments, progress, and treatment goals.
+A comprehensive web application for occupational therapists to track patient progress, assessments, goals, and therapy sessions.
 
 ## Live Demo
 
-🌐 **Deployed Application**: [https://ot-tracking-tool.web.app](https://ot-tracking-tool.web.app)
+🔗 **[https://ot-tracking-tool.web.app](https://ot-tracking-tool.web.app)**
 
 ## Features
 
-### Sprint 1: Authentication ✅ (Completed)
-- User registration and login with email/password
-- Protected routes for authenticated users
-- User profile management
-- Secure Firebase Authentication
-- Professional UI with responsive design
+### Patient Management ✅
+- Create and manage patient profiles with demographics
+- Track patient age, diagnosis, and clinical notes
+- View comprehensive patient dashboards with quick stats
+- Edit patient information as needed
 
-### Upcoming Sprints
-- **Sprint 2**: Patient Management System
-- **Sprint 3**: Program Evaluation Assessments
-- **Sprint 4**: Progress Visualization with Charts
-- **Sprint 5-6**: ROM Assessment and Visualization
-- **Sprint 7-8**: Goal Tracking and Session Notes
-- **Sprint 9**: Photo/Video Upload
-- **Sprint 10**: Dashboard and Reporting
-- **Sprint 11**: Final Polish and UX
+### Program Evaluations ✅
+- 17-question assessments across 4 developmental domains:
+  - Play Skills
+  - Self-Care Skills
+  - Fine Motor Skills
+  - Gross Motor Skills
+- Pre and post-assessment tracking
+- Save as draft or submit complete
+- Automatic domain average calculations
+- Progress visualization with charts
+
+### ROM (Range of Motion) Assessments ✅
+- Comprehensive joint measurement tracking
+- 38 different movements across 7 body regions:
+  - Shoulder, Elbow/Forearm, Wrist
+  - Hip, Knee, Ankle
+  - Spine (cervical and lumbar)
+- Bilateral measurement support for paired joints
+- Real-time percentage of normal ROM calculations
+- Color-coded status indicators (normal/mild/moderate/severe)
+- Regional ROM visualization
+
+### Progress Visualization ✅
+- **Program Evaluation Charts:**
+  - Domain trends over time (line charts)
+  - Pre vs Post comparison (bar charts)
+  - Improvement analysis with metrics
+  - Summary statistics
+
+- **ROM Progress Charts:**
+  - Overall ROM timeline tracking
+  - Radar charts showing ROM by body region
+  - Pre vs Post regional comparison
+  - Improvement metrics and percentages
+
+### Goal Tracking ✅
+- Create treatment goals with categories:
+  - Functional Skills, Motor Skills
+  - Cognitive Skills, Social/Behavioral
+  - Self-Care, Other
+- Set measurable objectives and target dates
+- Track progress with visual progress bars (0-100%)
+- Monitor goal status (Active, Achieved, Modified, Discontinued)
+- View active goals and achievement statistics
+
+### Session Notes ✅
+- Document therapy sessions with structured fields:
+  - Session date and duration
+  - Session focus and activities
+  - Observations and performance notes
+  - Progress toward goals
+  - Next steps planning
+- Track attendance status:
+  - Completed, Cancelled, No Show, Rescheduled
+- View total session time and completion statistics
+- Edit and update session notes as needed
 
 ## Tech Stack
 
 - **Frontend**: React 18 with Vite
-- **Backend**: Firebase (Authentication, Firestore, Storage, Hosting)
+- **Backend**: Firebase
+  - Authentication (Email/Password)
+  - Firestore (NoSQL Database)
+  - Hosting
 - **Routing**: React Router v6
-- **Styling**: Custom CSS with responsive design
-- **Deployment**: Firebase Hosting
+- **Charts**: Recharts for data visualization
+- **Styling**: CSS Modules with responsive design
 
 ## Getting Started
 
@@ -108,45 +157,83 @@ firebase deploy --project ot-tracking-tool
 ```
 ot-tracking-tool/
 ├── src/
-│   ├── components/        # React components
-│   │   ├── Auth.css      # Authentication styles
-│   │   ├── Dashboard.css # Dashboard styles
-│   │   ├── Dashboard.jsx
-│   │   ├── Login.jsx
-│   │   ├── Register.jsx
-│   │   └── PrivateRoute.jsx
-│   ├── contexts/         # React contexts
-│   │   └── AuthContext.jsx
-│   ├── firebase.js       # Firebase configuration
-│   ├── App.jsx          # Main app component
-│   ├── App.css          # App styles
-│   ├── index.css        # Global styles
-│   └── main.jsx         # Entry point
-├── public/              # Static assets
-├── dist/                # Production build
-├── .env                 # Environment variables (not in git)
-├── .env.example        # Environment template
-├── firebase.json       # Firebase configuration
-├── firestore.rules     # Firestore security rules
+│   ├── components/           # React components
+│   │   ├── AssessmentForm.jsx     # Program evaluation form
+│   │   ├── Dashboard.jsx          # Main dashboard
+│   │   ├── Goals.jsx              # Goal tracking
+│   │   ├── Login.jsx              # Authentication
+│   │   ├── PatientProfile.jsx     # Patient details
+│   │   ├── Patients.jsx           # Patient list
+│   │   ├── ProgressCharts.jsx     # Program eval charts
+│   │   ├── ROMAssessmentForm.jsx  # ROM assessment form
+│   │   ├── ROMProgressCharts.jsx  # ROM visualization
+│   │   └── SessionNotes.jsx       # Session documentation
+│   ├── contexts/
+│   │   └── AuthContext.jsx   # Authentication context
+│   ├── data/
+│   │   ├── assessmentQuestions.js # Program eval questions
+│   │   └── romQuestions.js        # ROM measurements
+│   ├── firebase.js           # Firebase configuration
+│   ├── App.jsx              # Main app component
+│   └── main.jsx             # Entry point
+├── public/                  # Static assets
+├── dist/                    # Production build
+├── .env                     # Environment variables
+├── firebase.json            # Firebase configuration
+├── firestore.rules          # Security rules
 └── README.md
-
 ```
+
+## Data Structure
+
+The application uses the following Firestore collections:
+- `users` - User profiles and authentication data
+- `patients` - Patient demographic information
+- `assessments` - Program evaluation assessments
+- `romAssessments` - Range of motion assessments
+- `goals` - Treatment goals and progress tracking
+- `sessionNotes` - Therapy session documentation
 
 ## Security
 
-- All sensitive configuration is stored in environment variables
-- Firestore security rules enforce data access control
-- Authentication required for all protected routes
-- User data is isolated and protected
+- User authentication required for all features
+- Firestore security rules ensure users only access their own data
+- All patient data is private and isolated per therapist
+- Environment variables protect sensitive Firebase configuration
 
-## Contributing
+## Development Timeline
 
-This is a personal project for occupational therapy practice management. Feel free to fork and adapt for your own use.
+The application was built in systematic sprints:
+
+1. **Sprint 1:** Authentication and basic setup
+2. **Sprint 2:** Patient management system
+3. **Sprint 3:** Program evaluation assessments
+4. **Sprint 4:** Progress visualization with charts
+5. **Sprint 5:** ROM assessment implementation
+6. **Sprint 6:** ROM assessment visualization
+7. **Sprint 7:** Goal tracking system
+8. **Sprint 8:** Session notes documentation
+9. **Sprint 10:** Dashboard and reporting enhancements
+10. **Sprint 11:** Final polish and UX improvements
+
+## Future Enhancements
+
+- Media upload (photos/videos) for progress documentation
+- PDF report generation
+- Practice-level analytics dashboard
+- Team collaboration features
+- Mobile app version
+- Appointment scheduling
+- Billing and insurance tracking
+
+## Author
+
+A.J. Skidmore
 
 ## License
 
-MIT License - feel free to use this project for your own purposes.
+This project is developed for educational and professional use.
 
-## Acknowledgments
+---
 
-Built with Claude Code for efficient occupational therapy practice management.
+Built with ❤️ for occupational therapists using Claude Code

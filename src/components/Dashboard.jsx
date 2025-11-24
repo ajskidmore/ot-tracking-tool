@@ -31,10 +31,35 @@ const Dashboard = () => {
       const patientsSnapshot = await getDocs(patientsQuery);
       const totalPatients = patientsSnapshot.size;
 
+      // Load assessments this month
+      const firstDayOfMonth = new Date();
+      firstDayOfMonth.setDate(1);
+      firstDayOfMonth.setHours(0, 0, 0, 0);
+
+      const assessmentsQuery = query(
+        collection(db, 'assessments'),
+        where('userId', '==', currentUser.uid),
+        where('status', '==', 'complete')
+      );
+      const assessmentsSnapshot = await getDocs(assessmentsQuery);
+      const assessmentsThisMonth = assessmentsSnapshot.docs.filter(doc => {
+        const createdAt = new Date(doc.data().createdAt);
+        return createdAt >= firstDayOfMonth;
+      }).length;
+
+      // Load active goals
+      const goalsQuery = query(
+        collection(db, 'goals'),
+        where('userId', '==', currentUser.uid),
+        where('status', '==', 'active')
+      );
+      const goalsSnapshot = await getDocs(goalsQuery);
+      const activeGoals = goalsSnapshot.size;
+
       setStats({
         totalPatients,
-        assessmentsThisMonth: 0, // Will be populated in Sprint 3
-        activeGoals: 0 // Will be populated in Sprint 7
+        assessmentsThisMonth,
+        activeGoals
       });
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -111,15 +136,17 @@ const Dashboard = () => {
         </div>
 
         <div className="info-section">
-          <h3>Sprint Progress</h3>
+          <h3>Application Features</h3>
           <ul>
-            <li>✅ Sprint 1: Authentication and basic setup (Completed)</li>
-            <li>✅ Sprint 2: Patient management system (Completed)</li>
-            <li>✅ Sprint 3: Program evaluation assessments (Completed)</li>
-            <li>⏳ Sprint 4: Progress visualization with charts (Next)</li>
+            <li>✅ Patient Management - Add, edit, and track patient information</li>
+            <li>✅ Program Evaluations - 17-question assessments across 4 domains</li>
+            <li>✅ ROM Assessments - Comprehensive range of motion tracking</li>
+            <li>✅ Progress Visualization - Charts and trends for all assessments</li>
+            <li>✅ Goal Tracking - Create and monitor treatment goals</li>
+            <li>✅ Session Notes - Document therapy sessions with detailed notes</li>
           </ul>
           <p className="info-note">
-            You can now add patients and create assessments! Go to any patient profile and click "New Assessment" to get started.
+            Your comprehensive OT tracking tool is ready! Navigate to Patients to begin managing your caseload.
           </p>
         </div>
       </main>
