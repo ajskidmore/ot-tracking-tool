@@ -27,6 +27,21 @@ const PatientProfile = () => {
     loadAssessments();
     loadROMAssessments();
     loadGoals();
+
+    // Handle URL hash for tab switching
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash && ['overview', 'assessments', 'progress', 'rom-progress'].includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, [patientId]);
 
   const loadPatient = async () => {
@@ -169,158 +184,10 @@ const PatientProfile = () => {
 
   return (
     <div className="patient-profile-container">
-      <div className="profile-header">
-        <button className="btn-back" onClick={() => navigate('/patients')}>
-          ← Back to Patients
-        </button>
-        <div className="profile-header-actions">
-          {!editing ? (
-            <button className="btn-primary" onClick={() => setEditing(true)}>
-              Edit Patient
-            </button>
-          ) : (
-            <>
-              <button className="btn-secondary" onClick={handleCancelEdit}>
-                Cancel
-              </button>
-              <button className="btn-primary" onClick={handleSaveChanges}>
-                Save Changes
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
       {error && <div className="error-message">{error}</div>}
 
       <div className="profile-content">
-        <div className="profile-card">
-          <h1>{patient.firstName} {patient.lastName}</h1>
-
-          {!editing ? (
-            <div className="profile-info">
-              <div className="info-row">
-                <span className="info-label">Age:</span>
-                <span className="info-value">{calculateAge(patient.dateOfBirth)} years old</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Date of Birth:</span>
-                <span className="info-value">{new Date(patient.dateOfBirth).toLocaleDateString()}</span>
-              </div>
-              {patient.diagnosis && (
-                <div className="info-row">
-                  <span className="info-label">Diagnosis:</span>
-                  <span className="info-value">{patient.diagnosis}</span>
-                </div>
-              )}
-              {patient.notes && (
-                <div className="info-row">
-                  <span className="info-label">Notes:</span>
-                  <span className="info-value">{patient.notes}</span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <form onSubmit={handleSaveChanges} className="edit-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="firstName">First Name</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="lastName">Last Name</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <label htmlFor="dateOfBirth">Date of Birth</label>
-                <input
-                  type="date"
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="diagnosis">Diagnosis</label>
-                <input
-                  type="text"
-                  id="diagnosis"
-                  name="diagnosis"
-                  value={formData.diagnosis || ''}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="notes">Notes</label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  value={formData.notes || ''}
-                  onChange={handleInputChange}
-                  rows="4"
-                />
-              </div>
-            </form>
-          )}
-        </div>
-
         <div className="profile-tabs">
-          <div className="tab-buttons">
-            <button
-              className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Overview
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'assessments' ? 'active' : ''}`}
-              onClick={() => setActiveTab('assessments')}
-            >
-              Assessments ({assessments.length})
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'progress' ? 'active' : ''}`}
-              onClick={() => setActiveTab('progress')}
-            >
-              Program Progress
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'rom-progress' ? 'active' : ''}`}
-              onClick={() => setActiveTab('rom-progress')}
-            >
-              ROM Progress
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'goals' ? 'active' : ''}`}
-              onClick={() => navigate(`/patients/${patientId}/goals`)}
-            >
-              Goals ({goals.filter(g => g.status === 'active').length})
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'session-notes' ? 'active' : ''}`}
-              onClick={() => navigate(`/patients/${patientId}/session-notes`)}
-            >
-              Session Notes
-            </button>
-          </div>
-
           <div className="tab-content">
             {activeTab === 'overview' && (
               <div className="profile-sections">
@@ -480,6 +347,115 @@ const PatientProfile = () => {
             )}
           </div>
         </div>
+
+        {/* Patient Info Card - Below Stats */}
+        <div className="profile-card">
+          <h1>{patient.firstName} {patient.lastName}</h1>
+
+          {!editing ? (
+            <>
+              <div className="profile-info">
+                <div className="info-row">
+                  <span className="info-label">Age:</span>
+                  <span className="info-value">{calculateAge(patient.dateOfBirth)} years old</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Date of Birth:</span>
+                  <span className="info-value">{new Date(patient.dateOfBirth).toLocaleDateString()}</span>
+                </div>
+                {patient.diagnosis && (
+                  <div className="info-row">
+                    <span className="info-label">Diagnosis:</span>
+                    <span className="info-value">{patient.diagnosis}</span>
+                  </div>
+                )}
+                {patient.notes && (
+                  <div className="info-row">
+                    <span className="info-label">Notes:</span>
+                    <span className="info-value">{patient.notes}</span>
+                  </div>
+                )}
+              </div>
+              <div className="profile-header-actions">
+                <button className="btn-primary" onClick={() => setEditing(true)}>
+                  Edit Patient
+                </button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleSaveChanges} className="edit-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="firstName">First Name</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="lastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="dateOfBirth">Date of Birth</label>
+                <input
+                  type="date"
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="diagnosis">Diagnosis</label>
+                <input
+                  type="text"
+                  id="diagnosis"
+                  name="diagnosis"
+                  value={formData.diagnosis || ''}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="notes">Notes</label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  value={formData.notes || ''}
+                  onChange={handleInputChange}
+                  rows="4"
+                />
+              </div>
+              <div className="profile-header-actions">
+                <button className="btn-secondary" onClick={handleCancelEdit}>
+                  Cancel
+                </button>
+                <button className="btn-primary" onClick={handleSaveChanges}>
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+
+      <div className="profile-footer">
+        <button className="btn-back" onClick={() => navigate('/dashboard')}>
+          ← Back
+        </button>
       </div>
     </div>
   );

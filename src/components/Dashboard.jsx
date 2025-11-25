@@ -3,27 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { usePatientFilter } from '../contexts/PatientFilterContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const { currentUser, userProfile, logout } = useAuth();
   const navigate = useNavigate();
+  const { patients } = usePatientFilter();
   const [stats, setStats] = useState({
     totalPatients: 0,
     assessmentsThisMonth: 0,
-    activeGoals: 0
+    activeGoals: 0,
+    sessionNotesCount: 0
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStats();
+    if (currentUser) {
+      loadStats();
+    }
   }, [currentUser]);
 
   const loadStats = async () => {
     try {
       setLoading(true);
 
-      // Load total patients
+      // Load total patients count
       const patientsQuery = query(
         collection(db, 'patients'),
         where('userId', '==', currentUser.uid)
@@ -42,6 +47,7 @@ const Dashboard = () => {
         where('status', '==', 'complete')
       );
       const assessmentsSnapshot = await getDocs(assessmentsQuery);
+
       const assessmentsThisMonth = assessmentsSnapshot.docs.filter(doc => {
         const createdAt = new Date(doc.data().createdAt);
         return createdAt >= firstDayOfMonth;
@@ -56,10 +62,19 @@ const Dashboard = () => {
       const goalsSnapshot = await getDocs(goalsQuery);
       const activeGoals = goalsSnapshot.size;
 
+      // Load session notes count
+      const sessionNotesQuery = query(
+        collection(db, 'sessionNotes'),
+        where('userId', '==', currentUser.uid)
+      );
+      const sessionNotesSnapshot = await getDocs(sessionNotesQuery);
+      const sessionNotesCount = sessionNotesSnapshot.size;
+
       setStats({
         totalPatients,
         assessmentsThisMonth,
-        activeGoals
+        activeGoals,
+        sessionNotesCount
       });
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -79,59 +94,63 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-left">
-          <h1>OT Tracking Tool</h1>
-          <nav className="nav-links">
-            <button onClick={() => navigate('/dashboard')} className="nav-link active">
-              Dashboard
-            </button>
-            <button onClick={() => navigate('/patients')} className="nav-link">
-              Patients
-            </button>
-          </nav>
-        </div>
-        <div className="user-info">
-          <span>Welcome, {userProfile?.displayName || currentUser?.email}!</span>
-          <button onClick={handleLogout} className="btn-logout">
-            Logout
-          </button>
-        </div>
-      </header>
-
       <main className="dashboard-content">
         <div className="welcome-section">
-          <h2>Welcome to OT Tracking Tool</h2>
-          <p>Your comprehensive solution for tracking occupational therapy assessments and patient progress.</p>
+          <div>
+            <h2>Welcome Back, {userProfile?.displayName || 'Therapist'}!</h2>
+            <p>Track patient progress, assessments, and therapy goals all in one place.</p>
+          </div>
+          {patients.length > 0 && (
+            <div className="patient-selector">
+              <label htmlFor="patient-select">Quick Access:</label>
+              <select
+                id="patient-select"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    navigate(`/patients/${e.target.value}`);
+                  }
+                }}
+                className="patient-select"
+              >
+                <option value="">Select a patient...</option>
+                {patients.map(patient => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.firstName} {patient.lastName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="dashboard-grid">
-          <div className="dashboard-card clickable" onClick={() => navigate('/patients')}>
-            <h3>Patients</h3>
-            <p>Manage your patient roster</p>
-            <div className="card-stat">{loading ? '-' : stats.totalPatients}</div>
-            <p className="card-label">Total Patients</p>
-          </div>
-
           <div className="dashboard-card">
             <h3>Assessments</h3>
-            <p>Track Program Evaluations and ROM</p>
-            <div className="card-stat">{stats.assessmentsThisMonth}</div>
+            <p>Program Evaluations & ROM</p>
+            <div className="card-stat">{loading ? '-' : stats.assessmentsThisMonth}</div>
             <p className="card-label">Completed This Month</p>
           </div>
 
           <div className="dashboard-card">
             <h3>Goals</h3>
-            <p>Monitor treatment goals</p>
-            <div className="card-stat">{stats.activeGoals}</div>
+            <p>Treatment objectives</p>
+            <div className="card-stat">{loading ? '-' : stats.activeGoals}</div>
             <p className="card-label">Active Goals</p>
           </div>
 
           <div className="dashboard-card">
-            <h3>Reports</h3>
-            <p>Generate progress reports</p>
-            <div className="card-stat">-</div>
-            <p className="card-label">Coming Soon</p>
+            <h3>Session Notes</h3>
+            <p>Therapy documentation</p>
+            <div className="card-stat">{loading ? '-' : stats.sessionNotesCount}</div>
+            <p className="card-label">Total Sessions</p>
+          </div>
+
+          <div className="dashboard-card">
+            <h3>Total Patients</h3>
+            <p>Your patient roster</p>
+            <div className="card-stat">{loading ? '-' : stats.totalPatients}</div>
+            <p className="card-label">Patients in System</p>
           </div>
         </div>
 
@@ -146,7 +165,7 @@ const Dashboard = () => {
             <li>✅ Session Notes - Document therapy sessions with detailed notes</li>
           </ul>
           <p className="info-note">
-            Your comprehensive OT tracking tool is ready! Navigate to Patients to begin managing your caseload.
+            Your comprehensive OT tracking tool is ready! Select a patient from the dropdown above to view their profile, or add a new patient to begin tracking.
           </p>
         </div>
       </main>

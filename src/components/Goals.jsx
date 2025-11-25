@@ -64,13 +64,17 @@ const Goals = () => {
 
       if (docSnap.exists()) {
         const patientData = { id: docSnap.id, ...docSnap.data() };
+
+        // Security check: ensure this patient belongs to the current user
         if (patientData.userId !== currentUser.uid) {
-          navigate('/patients');
+          navigate('/dashboard');
           return;
         }
+
         setPatient(patientData);
       } else {
-        navigate('/patients');
+        setError('Patient not found');
+        navigate('/dashboard');
       }
     } catch (err) {
       console.error('Error loading patient:', err);
@@ -87,6 +91,7 @@ const Goals = () => {
         where('userId', '==', currentUser.uid),
         orderBy('createdAt', 'desc')
       );
+
       const querySnapshot = await getDocs(q);
       const goalsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -116,7 +121,7 @@ const Goals = () => {
     try {
       const goalData = {
         ...formData,
-        patientId,
+        patientId: patientId,
         userId: currentUser.uid,
         progress: parseInt(formData.progress) || 0,
         updatedAt: new Date().toISOString()
@@ -209,13 +214,17 @@ const Goals = () => {
     return <div className="loading">Loading...</div>;
   }
 
+  if (!patient) {
+    return null;
+  }
+
   return (
     <div className="goals-container">
       <div className="goals-header">
         <button className="btn-back" onClick={() => navigate(`/patients/${patientId}`)}>
-          ← Back to Patient
+          ← Back
         </button>
-        <h1>Treatment Goals - {patient?.firstName} {patient?.lastName}</h1>
+        <h1>Treatment Goals - {patient.firstName} {patient.lastName}</h1>
       </div>
 
       {error && <div className="error-message">{error}</div>}

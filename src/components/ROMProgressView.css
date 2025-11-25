@@ -1,0 +1,303 @@
+.rom-progress-container {
+  min-height: 100vh;
+  
+}
+
+.rom-progress-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.rom-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 24px;
+}
+
+.rom-progress-header h1 {
+  color: var(--gray-900);
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.rom-progress-subtitle {
+  color: var(--gray-600);
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Joint Filter */
+.joint-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.joint-filter label {
+  font-weight: 600;
+  color: var(--gray-700);
+  font-size: 14px;
+}
+
+.joint-select {
+  min-width: 250px;
+  padding: 10px 16px;
+  border: 2px solid var(--primary-light);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gray-900);
+  background: white;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.joint-select:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+.joint-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+}
+
+.progress-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.patient-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.patient-section-title {
+  color: var(--gray-900);
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.chart-card {
+  background: white;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  transition: var(--transition);
+}
+
+.chart-card.full-width {
+  width: 100%;
+}
+
+.chart-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
+}
+
+.chart-card h3 {
+  color: var(--gray-900);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--gray-100);
+}
+
+.chart-container {
+  height: 400px;
+  position: relative;
+}
+
+.chart-container-small {
+  height: 250px;
+  position: relative;
+}
+
+.joints-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+/* Measurements Card */
+.measurements-card {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.measurements-card h3 {
+  color: var(--gray-900);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.measurements-date {
+  color: var(--gray-600);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.measurements-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.measurement-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  
+  border-radius: 10px;
+  border: 1px solid var(--gray-200);
+}
+
+.measurement-joint {
+  color: var(--gray-700);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.measurement-value {
+  color: var(--secondary);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--gray-500);
+  font-size: 16px;
+}
+
+.empty-state-large {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  padding: 60px 40px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.empty-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+.empty-state-large h3 {
+  color: var(--gray-900);
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.empty-state-large p {
+  color: var(--gray-600);
+  font-size: 16px;
+  margin: 0 0 32px 0;
+  max-width: 500px;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 18px;
+  color: var(--gray-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rom-progress-content {
+    padding: 24px 16px;
+  }
+
+  .rom-progress-header {
+    flex-direction: column;
+  }
+
+  .rom-progress-header h1 {
+    font-size: 24px;
+  }
+
+  .rom-progress-header button {
+    width: 100%;
+  }
+
+  .joint-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .joint-select {
+    width: 100%;
+  }
+
+  .joints-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .measurements-table {
+    grid-template-columns: 1fr;
+  }
+
+  .empty-state-large {
+    padding: 40px 24px;
+  }
+
+  .empty-icon {
+    font-size: 60px;
+  }
+}

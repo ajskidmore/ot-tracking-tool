@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { PatientFilterProvider } from './contexts/PatientFilterContext';
+import Header from './components/Header';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
-import Patients from './components/Patients';
 import PatientProfile from './components/PatientProfile';
 import AssessmentForm from './components/AssessmentForm';
 import ROMAssessmentForm from './components/ROMAssessmentForm';
@@ -16,22 +17,16 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        <PatientFilterProvider>
+          <Header />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           <Route
             path="/dashboard"
             element={
               <PrivateRoute>
                 <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/patients"
-            element={
-              <PrivateRoute>
-                <Patients />
               </PrivateRoute>
             }
           />
@@ -93,6 +88,7 @@ function App() {
           />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        </PatientFilterProvider>
       </AuthProvider>
     </Router>
   );

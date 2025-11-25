@@ -57,12 +57,12 @@ const SessionNotes = () => {
       if (docSnap.exists()) {
         const patientData = { id: docSnap.id, ...docSnap.data() };
         if (patientData.userId !== currentUser.uid) {
-          navigate('/patients');
+          navigate('/dashboard');
           return;
         }
         setPatient(patientData);
       } else {
-        navigate('/patients');
+        navigate('/dashboard');
       }
     } catch (err) {
       console.error('Error loading patient:', err);
@@ -213,7 +213,7 @@ const SessionNotes = () => {
     <div className="session-notes-container">
       <div className="session-header">
         <button className="btn-back" onClick={() => navigate(`/patients/${patientId}`)}>
-          ← Back to Patient
+          ← Back
         </button>
         <h1>Session Notes - {patient?.firstName} {patient?.lastName}</h1>
       </div>

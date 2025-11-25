@@ -127,32 +127,6 @@ const Patients = () => {
 
   return (
     <div className="patients-page">
-      <header className="page-header">
-        <div className="header-left">
-          <h1 onClick={() => navigate('/dashboard')} style={{cursor: 'pointer'}}>OT Tracking Tool</h1>
-          <nav className="nav-links">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={() => navigate('/patients')}
-              className={`nav-link ${isActive('/patients') ? 'active' : ''}`}
-            >
-              Patients
-            </button>
-          </nav>
-        </div>
-        <div className="user-info">
-          <span>Welcome, {userProfile?.displayName || currentUser?.email}!</span>
-          <button onClick={handleLogout} className="btn-logout">
-            Logout
-          </button>
-        </div>
-      </header>
-
       <div className="patients-container">
         <div className="patients-header">
           <div>

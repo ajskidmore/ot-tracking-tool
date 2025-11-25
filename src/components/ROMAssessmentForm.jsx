@@ -68,6 +68,7 @@ const ROMAssessmentForm = () => {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
+        console.log('Loaded ROM assessment:', data);
         if (data.userId !== currentUser.uid) {
           navigate('/patients');
           return;
@@ -82,6 +83,7 @@ const ROMAssessmentForm = () => {
         }
         // Set view mode if assessment is complete
         setViewMode(data.status === 'complete');
+        console.log('View mode set to:', data.status === 'complete', 'Status:', data.status);
       }
     } catch (err) {
       console.error('Error loading assessment:', err);
@@ -193,6 +195,7 @@ const ROMAssessmentForm = () => {
 
   // View mode for completed assessments
   if (viewMode && existingAssessment) {
+    console.log('Rendering view mode. Selected regions:', selectedRegions, 'Measurements:', measurements);
     return (
       <div className="rom-assessment-container">
         <div className="assessment-header">

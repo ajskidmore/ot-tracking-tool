@@ -29,21 +29,21 @@ service cloud.firestore {
     match /assessments/{assessmentId} {
       allow read, write: if isAuthenticated() &&
                            resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // ROM Assessments collection - users can only access ROM assessments for their patients
     match /romAssessments/{romAssessmentId} {
       allow read, write: if isAuthenticated() &&
                            resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // Goals collection - users can only access goals for their patients
     match /goals/{goalId} {
       allow read, write: if isAuthenticated() &&
                            resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // Session Notes collection - users can only access session notes for their patients
